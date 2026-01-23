@@ -1,0 +1,29 @@
+"Дан список А размера N и целые числа K и L ($1 < K < L < N$). Переставить в обратном порядке элементы списка, расположенные между элементами $A_K$ и $A_L$ не включая эти элементы."
+import random
+
+print("\n--- Задача 3 ---")
+try:
+    n = int(input("Введите размер списка N (желательно > 5): "))
+    
+    massiv = []
+    for _ in range(n):
+        massiv.append(random.randint(10, 99))
+    print("Исходный список:", massiv)
+    
+    print(f"Введите K и L так, чтобы 1 < K < L < {n}")
+    k = int(input("Введите K: "))
+    l = int(input("Введите L: "))
+    
+    if 1 < k < l < n:
+        
+        part = massiv[k+1:l]
+        part.reverse() # переворачиваем часть
+        
+        massiv[k+1:l] = part
+        
+        print("Результат:", massiv)
+    else:
+        print("Не соблюдено условие 1 < K < L < N")
+
+except ValueError:
+    print("Ошибка ввода данных.")
