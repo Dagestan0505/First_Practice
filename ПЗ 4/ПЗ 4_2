@@ -1,0 +1,49 @@
+'''Даны положительные числа A, B, C.
+На прямоугольнике размера A × B размещено максимально возможное количество квадратов со стороной C (без наложений).
+Найти количество квадратов, размещённых на прямоугольнике.
+При решении нельзя использовать операции умножения и деления.'''
+
+a = input("Введите A: ")
+b = input("Введите B: ")
+c = input("Введите C: ")
+
+while type(a) != int:
+    try:
+        a = int(a)
+    except ValueError:
+        print("Ошибка")
+        a = input("Введите A: ")
+
+while type(b) != int:
+    try:
+        b = int(b)
+    except ValueError:
+        print("Ошибка")
+        b = input("Введите B: ")
+
+while type(c) != int:
+    try:
+        c = int(c)
+    except ValueError:
+        print("Ошибка")
+        c = input("Введите C: ")
+
+count_a = 0
+temp = c
+while temp <= a:
+    count_a += 1
+    temp += c
+
+count_b = 0
+temp = c
+while temp <= b:
+    count_b += 1
+    temp += c
+
+result = 0
+i = 0
+while i < count_a:
+    result += count_b
+    i += 1
+
+print("Количество квадратов:", result)
