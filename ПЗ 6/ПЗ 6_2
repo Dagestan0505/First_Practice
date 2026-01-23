@@ -1,0 +1,26 @@
+"Дан список размера N. Найти номера тех элементов списка, которые больше своего правого соседа, и количество таких элементов. Выводить в порядке возрастания."
+import random
+
+print("\n--- Задача 2 ---")
+try:
+    n = int(input("Введите размер списка N: "))
+    
+    a = []
+    for _ in range(n):
+        a.append(random.randint(0, 50))
+    
+    print("Исходный список:", a)
+    
+    indices = []
+    count = 0
+    
+    for i in range(len(a) - 1):
+        if a[i] > a[i+1]:
+            indices.append(i)
+            count += 1
+            
+    print("Номера элементов (индексы):", indices)
+    print("Количество таких элементов:", count)
+
+except ValueError:
+    print("Ошибка! Нужно ввести целое число.")
