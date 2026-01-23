@@ -1,0 +1,46 @@
+"Составить функцию решения задачи: из заданного числа вычли сумму его цифр. Из результата вновь вычли сумму его цифр и т. д. Через сколько таких действий получится нуль?"
+def get_digits_sum(n):
+    """
+    Функция для подсчета суммы цифр числа
+    """
+    summ = 0
+    temp = n
+
+    while temp > 0:
+        digit = temp % 10
+        summ += digit
+        temp //= 10
+    return summ
+
+
+def count_steps_to_zero(number):
+    """
+    Функция считает количество шагов вычитания суммы цифр до получения 0
+    """
+    steps = 0
+    current_val = number
+    
+    while current_val > 0:
+        d_sum = get_digits_sum(current_val)
+        current_val -= d_sum
+        steps += 1
+        
+    return steps
+
+
+print("--- Задача 1: Вычитание суммы цифр ---")
+
+while True:
+    try:
+        user_input = input("Введите целое положительное число: ")
+        num = int(user_input)
+        
+        if num < 0:
+            print("Пожалуйста, введите положительное число.")
+        else:
+            break
+    except ValueError:
+        print("Ошибка! Вы ввели не целое число. Попробуйте снова.")
+
+result = count_steps_to_zero(num)
+print(f"Количество действий до получения нуля: {result}")
