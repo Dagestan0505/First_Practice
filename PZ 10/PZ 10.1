@@ -1,0 +1,42 @@
+''Средствами языка Python сформировать текстовый файл (.txt), содержащий 
+последовательность из целых положительных и отрицательных чисел. Сформировать 
+новый текстовый файл (.txt) следующего вида, предварительно выполнив требуемую 
+обработку элементов: 
+ 
+Исходные данные: 
+Количество элементов: 
+Отрицательные нечетные элементы: 
+Сумма отрицательных нечетных элементов: 
+Среднее арифметическое отрицательных нечетных элементов:''
+
+
+data = [-15, 20, -7, 44, -3, 10, -9, 21]
+f = open('numbers.txt', 'w')
+for x in data:
+    f.write(str(x) + ' ')
+f.close()
+
+f = open('numbers.txt', 'r')
+content = f.read().split()
+f.close()
+
+nums = []
+for x in content:
+    nums.append(int(x))
+
+neg_odd = []
+for x in nums:
+    if x < 0 and x % 2 != 0:
+        neg_odd.append(x)
+
+count_all = len(nums)
+sum_neg_odd = sum(neg_odd)
+avg_neg_odd = sum_neg_odd / len(neg_odd) if len(neg_odd) > 0 else 0
+
+f_res = open('result_1.txt', 'w', encoding='utf-8')
+f_res.write(f"Исходные данные: {nums}\n")
+f_res.write(f"Количество элементов: {count_all}\n")
+f_res.write(f"Отрицательные нечетные элементы: {neg_odd}\n")
+f_res.write(f"Сумма отрицательных нечетных элементов: {sum_neg_odd}\n")
+f_res.write(f"Среднее арифметическое: {avg_neg_odd}\n")
+f_res.close()
