@@ -1,0 +1,21 @@
+''Из списка: ['Валентин', 'Петр', 'Анна', 'Евгений', 'Константин', 'Валерия', 
+'Юлия'] получить новый список, в котором длина слов не превышает 5 символов.''
+
+
+class Building:
+    def __init__(self, address, floors, b_type):
+        self.address = address
+        self.floors = floors
+        self.b_type = b_type
+
+    def show_info(self):
+        print(f"Адрес: {self.address}, Этажей: {self.floors}, Тип: {self.b_type}")
+
+    def change_floors(self, new_floors):
+        self.floors = new_floors
+        print(f"Количество этажей изменено на: {self.floors}")
+
+house = Building("ул. Ленина, 10", 5, "Жилое")
+house.show_info()
+house.change_floors(9)
+house.show_info()
