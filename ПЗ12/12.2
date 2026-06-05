@@ -1,0 +1,22 @@
+''В матрице отрицательные элементы возвести в квадрат.''
+
+matr2 = [[(i * 3 - j * 2) for j in range(4)] for i in range(4)]
+
+matr2[0][1] = -5
+matr2[1][2] = -8
+matr2[2][1] = -3
+matr2[3][2] = -1
+
+print("--- Исходная матрица ---")
+for row in matr2:
+    print(row)
+print()
+
+print("--- 2. ---")
+for i in range(len(matr2)):
+    for j in range(len(matr2[i])):
+        if matr2[i][j] < 0:
+            matr2[i][j] = matr2[i][j] ** 2
+
+for row in matr2:
+    print(row)
