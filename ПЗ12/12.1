@@ -1,0 +1,20 @@
+''Перенести в новую матрицу Matr1 элементы, которые не находятся в первых и 
+последних строках и столбцах матрицы Matr2 произвольного размера. ''
+
+matr2 = [[(i * 3 - j * 2) for j in range(4)] for i in range(4)]
+
+print("--- Исходная матрица ---")
+for row in matr2:
+    print(row)
+print()
+
+print("--- 1. ---")
+matr1 = []
+for i in range(1, len(matr2) - 1):
+    строка_без_границ = []
+    for j in range(1, len(matr2[i]) - 1):
+        строка_без_границ.append(matr2[i][j])
+    matr1.append(строка_без_границ)
+
+for row in matr1:
+    print(row)
