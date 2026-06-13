@@ -1,0 +1,371 @@
+'' Приложение ОПТОВАЯ БАЗА для автоматизированного контроля движения товаров на оптовой базе. Таблица Товары должна содержать следующие данные: Код товара, Наименование товара, Наименование магазина, Заявки магазина, Количество товара на складе, Единицы измерения, Оптовая цена ''
+
+
+import tkinter as tk
+from tkinter import ttk, messagebox
+import sqlite3
+
+
+def connect_db():
+    conn = sqlite3.connect("optovaya_baza.db")
+    cur = conn.cursor()
+    # создаем таблицу если её нет
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS tovary (
+            kod INTEGER PRIMARY KEY AUTOINCREMENT,
+            nazvanie TEXT,
+            magazin TEXT,
+            zayavka INTEGER,
+            kolichestvo INTEGER,
+            ed_izm TEXT,
+            cena REAL
+        )
+    """)
+    conn.commit()
+    return conn
+
+
+def load_data():
+    conn = connect_db()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM tovary")
+    rows = cur.fetchall()
+    conn.close()
+    # очищаем таблицу перед загрузкой
+    for row in tree.get_children():
+        tree.delete(row)
+    for row in rows:
+        tree.insert("", tk.END, values=row)
+
+
+def add_record():
+    nazvanie = entry_name.get()
+    magazin = entry_mag.get()
+    zayavka = entry_zayavka.get()
+    kol = entry_kol.get()
+    ed = entry_ed.get()
+    cena = entry_cena.get()
+    
+    if not all([nazvanie, magazin, zayavka, kol, ed, cena]):
+        messagebox.showwarning("Ошибка", "Заполните все поля!")
+        return
+
+    try:
+        conn = connect_db()
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO tovary (nazvanie, magazin, zayavka, kolichestvo, ed_izm, cena)"
+            " VALUES (?, ?, ?, ?, ?, ?)",
+            (nazvanie, magazin, int(zayavka), int(kol), ed, float(cena))
+        )
+        conn.commit()
+        conn.close()
+        load_data()
+        clear_fields()
+        messagebox.showinfo("OK", "Запись добавлена!")
+    except ValueError:
+        messagebox.showerror("Ошибка", "Проверьте числовые поля!")
+
+
+def delete_by_kod():
+    val = entry_search.get()
+    if not val:
+        messagebox.showwarning("Ошибка", "Введите код товара!")
+        return
+    try:
+        conn = connect_db()
+        cur = conn.cursor()
+        cur.execute("DELETE FROM tovary WHERE kod = ?", (int(val),))
+        conn.commit()
+        conn.close()
+        load_data()
+        messagebox.showinfo("OK", f"Товар с кодом {val} удален!")
+    except ValueError:
+        messagebox.showerror("Ошибка", "Код должен быть числом!")
+
+
+def delete_by_magazin():
+    val = entry_search.get()
+    if not val:
+        messagebox.showwarning("Ошибка", "Введите название магазина!")
+        return
+    conn = connect_db()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM tovary WHERE magazin = ?", (val,))
+    conn.commit()
+    conn.close()
+    load_data()
+    messagebox.showinfo("OK", f"Записи магазина '{val}' удалены!")
+
+
+def delete_deficit():
+    conn = connect_db()
+    cur = conn.cursor()
+    cur.execute("DELETE FROM tovary WHERE kolichestvo < zayavka")
+    conn.commit()
+    conn.close()
+    load_data()
+    messagebox.showinfo("OK", "Дефицитные товары удалены!")
+
+
+def search_by_name():
+    val = entry_search.get()
+    if not val:
+        messagebox.showwarning("Ошибка", "Введите название товара!")
+        return
+    conn = connect_db()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM tovary WHERE nazvanie LIKE ?", (f"%{val}%",))
+    rows = cur.fetchall()
+    conn.close()
+    for row in tree.get_children():
+        tree.delete(row)
+    for row in rows:
+        tree.insert("", tk.END, values=row)
+
+
+def search_by_mag():
+    val = entry_search.get()
+    if not val:
+        messagebox.showwarning("Ошибка", "Введите название магазина!")
+        return
+    conn = connect_db()
+    cur = conn.cursor()
+    cur.execute("SELECT * FROM tovary WHERE magazin = ?", (val,))
+    rows = cur.fetchall()
+    conn.close()
+    for row in tree.get_children():
+        tree.delete(row)
+    for row in rows:
+        tree.insert("", tk.END, values=row)
+
+
+def search_by_price():
+    val = entry_search.get()
+    if not val:
+        messagebox.showwarning("Ошибка", "Введите максимальную цену!")
+        return
+    try:
+        conn = connect_db()
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM tovary WHERE cena < ?", (float(val),))
+        rows = cur.fetchall()
+        conn.close()
+        for row in tree.get_children():
+            tree.delete(row)
+        for row in rows:
+            tree.insert("", tk.END, values=row)
+    except ValueError:
+        messagebox.showerror("Ошибка", "Введите число!")
+
+
+def edit_price():
+    kod = entry_search.get()
+    new_val = entry_edit.get()
+    if not kod or not new_val:
+        messagebox.showwarning("Ошибка", "Заполните поля поиска и редактирования!")
+        return
+    try:
+        conn = connect_db()
+        cur = conn.cursor()
+        cur.execute("UPDATE tovary SET cena = ? WHERE kod = ?",
+                    (float(new_val), int(kod)))
+        conn.commit()
+        conn.close()
+        load_data()
+        messagebox.showinfo("OK", "Цена обновлена!")
+    except ValueError:
+        messagebox.showerror("Ошибка", "Проверьте данные!")
+
+
+def edit_kol():
+    kod = entry_search.get()
+    new_val = entry_edit.get()
+    if not kod or not new_val:
+        messagebox.showwarning("Ошибка", "Заполните поля поиска и редактирования!")
+        return
+    try:
+        conn = connect_db()
+        cur = conn.cursor()
+        cur.execute("UPDATE tovary SET kolichestvo = ? WHERE kod = ?",
+                    (int(new_val), int(kod)))
+        conn.commit()
+        conn.close()
+        load_data()
+        messagebox.showinfo("OK", "Количество обновлено!")
+    except ValueError:
+        messagebox.showerror("Ошибка", "Проверьте данные!")
+
+
+def edit_magazin():
+    kod = entry_search.get()
+    new_val = entry_edit.get()
+    if not kod or not new_val:
+        messagebox.showwarning("Ошибка", "Заполните поля поиска и редактирования!")
+        return
+    try:
+        conn = connect_db()
+        cur = conn.cursor()
+        cur.execute("UPDATE tovary SET magazin = ? WHERE kod = ?",
+                    (new_val, int(kod)))
+        conn.commit()
+        conn.close()
+        load_data()
+        messagebox.showinfo("OK", "Магазин обновлен!")
+    except ValueError:
+        messagebox.showerror("Ошибка", "Проверьте код товара!")
+
+
+def clear_fields():
+    entry_name.delete(0, tk.END)
+    entry_mag.delete(0, tk.END)
+    entry_zayavka.delete(0, tk.END)
+    entry_kol.delete(0, tk.END)
+    entry_ed.delete(0, tk.END)
+    entry_cena.delete(0, tk.END)
+
+
+def fill_test_data():
+    data = [
+        ("Молоко 3.2%", "Магнит", 100, 150, "литр", 65.0),
+        ("Хлеб белый", "Пятерочка", 200, 180, "шт", 35.5),
+        ("Сахар", "Магнит", 50, 80, "кг", 72.0),
+        ("Масло подсолн.", "Ашан", 60, 40, "литр", 120.0),
+        ("Гречка", "Пятерочка", 90, 95, "кг", 85.0),
+        ("Макароны", "Лента", 70, 100, "кг", 55.0),
+        ("Кефир 2.5%", "Магнит", 120, 130, "литр", 58.0),
+        ("Сыр Российский", "Ашан", 30, 25, "кг", 450.0),
+        ("Колбаса вар.", "Лента", 40, 35, "кг", 320.0),
+        ("Яйцо С1", "Пятерочка", 500, 480, "шт", 9.5),
+    ]
+    conn = connect_db()
+    cur = conn.cursor()
+    # добавляем только если таблица пустая
+    cur.execute("SELECT COUNT(*) FROM tovary")
+    if cur.fetchone()[0] == 0:
+        cur.executemany(
+            "INSERT INTO tovary (nazvanie, magazin, zayavka, kolichestvo, ed_izm, cena)"
+            " VALUES (?, ?, ?, ?, ?, ?)", data
+        )
+        conn.commit()
+    conn.close()
+    load_data()
+
+
+root = tk.Tk()
+root.title("Оптовая база — ПЗ №15 Вариант 1")
+root.geometry("980x680")
+root.configure(bg="#f0f0f0")
+
+tk.Label(root, text="ОПТОВАЯ БАЗА — Управление товарами",
+         font=("Arial", 14, "bold"), bg="#f0f0f0").pack(pady=(10, 5))
+
+cols = ("Код", "Наименование товара", "Магазин", "Заявка", "Кол-во", "Ед.изм", "Цена")
+tree = ttk.Treeview(root, columns=cols, show="headings", height=12)
+for col in cols:
+    tree.heading(col, text=col)
+    tree.column(col, width=120 if col != "Наименование товара" else 180)
+tree.pack(padx=10, pady=5, fill="x")
+
+bottom = tk.Frame(root, bg="#f0f0f0")
+bottom.pack(padx=10, fill="both", expand=True)
+
+frame_add = tk.LabelFrame(bottom, text="Добавить запись",
+                           font=("Arial", 9, "bold"), bg="#f0f0f0", padx=8, pady=5)
+frame_add.grid(row=0, column=0, sticky="nsew", padx=5, pady=5)
+
+labels = ["Наименование:", "Магазин:", "Заявка:", "Кол-во:", "Ед.изм:", "Цена:"]
+entries_add = []
+for i, lbl in enumerate(labels):
+    tk.Label(frame_add, text=lbl, font=("Arial", 9),
+             bg="#f0f0f0", anchor="w").grid(row=i, column=0, sticky="w", pady=2)
+    e = tk.Entry(frame_add, font=("Arial", 9), width=16)
+    e.grid(row=i, column=1, pady=2, padx=4)
+    entries_add.append(e)
+
+entry_name, entry_mag, entry_zayavka, entry_kol, entry_ed, entry_cena = entries_add
+
+tk.Button(frame_add, text="Добавить", bg="#5cb85c", fg="white",
+          font=("Arial", 9, "bold"), relief="flat",
+          command=add_record).grid(row=6, column=0, columnspan=2,
+                                   sticky="ew", pady=(8, 2), ipady=5)
+tk.Button(frame_add, text="Загрузить тест. данные", bg="#888",
+          fg="white", font=("Arial", 9), relief="flat",
+          command=fill_test_data).grid(row=7, column=0, columnspan=2,
+                                       sticky="ew", ipady=4)
+
+frame_ops = tk.LabelFrame(bottom, text="Поиск / Удаление / Редактирование",
+                           font=("Arial", 9, "bold"), bg="#f0f0f0", padx=8, pady=5)
+frame_ops.grid(row=0, column=1, sticky="nsew", padx=5, pady=5)
+
+tk.Label(frame_ops, text="Значение для поиска/удаления/ред.:",
+         font=("Arial", 9), bg="#f0f0f0").grid(row=0, column=0,
+                                                columnspan=2, sticky="w")
+entry_search = tk.Entry(frame_ops, font=("Arial", 10), width=22)
+entry_search.grid(row=1, column=0, columnspan=2, pady=(2, 6), sticky="ew")
+
+tk.Label(frame_ops, text="Новое значение (для редакт.):",
+         font=("Arial", 9), bg="#f0f0f0").grid(row=2, column=0,
+                                                columnspan=2, sticky="w")
+entry_edit = tk.Entry(frame_ops, font=("Arial", 10), width=22)
+entry_edit.grid(row=3, column=0, columnspan=2, pady=(2, 8), sticky="ew")
+
+
+tk.Label(frame_ops, text="— Поиск —", font=("Arial", 8, "bold"),
+         bg="#f0f0f0").grid(row=4, column=0, columnspan=2)
+tk.Button(frame_ops, text="По названию товара", relief="flat",
+          bg="#5bc0de", fg="white", font=("Arial", 8),
+          command=search_by_name).grid(row=5, column=0, columnspan=2,
+                                       sticky="ew", ipady=4, pady=1)
+tk.Button(frame_ops, text="По магазину", relief="flat",
+          bg="#5bc0de", fg="white", font=("Arial", 8),
+          command=search_by_mag).grid(row=6, column=0, columnspan=2,
+                                      sticky="ew", ipady=4, pady=1)
+tk.Button(frame_ops, text="Дешевле цены (введи цену)", relief="flat",
+          bg="#5bc0de", fg="white", font=("Arial", 8),
+          command=search_by_price).grid(row=7, column=0, columnspan=2,
+                                        sticky="ew", ipady=4, pady=1)
+
+
+tk.Label(frame_ops, text="— Удаление —", font=("Arial", 8, "bold"),
+         bg="#f0f0f0").grid(row=8, column=0, columnspan=2, pady=(6, 0))
+tk.Button(frame_ops, text="По коду товара", relief="flat",
+          bg="#d9534f", fg="white", font=("Arial", 8),
+          command=delete_by_kod).grid(row=9, column=0, columnspan=2,
+                                      sticky="ew", ipady=4, pady=1)
+tk.Button(frame_ops, text="По магазину", relief="flat",
+          bg="#d9534f", fg="white", font=("Arial", 8),
+          command=delete_by_magazin).grid(row=10, column=0, columnspan=2,
+                                          sticky="ew", ipady=4, pady=1)
+tk.Button(frame_ops, text="Дефицит (кол-во < заявки)", relief="flat",
+          bg="#d9534f", fg="white", font=("Arial", 8),
+          command=delete_deficit).grid(row=11, column=0, columnspan=2,
+                                       sticky="ew", ipady=4, pady=1)
+
+tk.Label(frame_ops, text="— Редактирование (по коду) —",
+         font=("Arial", 8, "bold"), bg="#f0f0f0").grid(row=12, column=0,
+                                                        columnspan=2, pady=(6, 0))
+tk.Button(frame_ops, text="Изменить цену", relief="flat",
+          bg="#f0ad4e", fg="white", font=("Arial", 8),
+          command=edit_price).grid(row=13, column=0, columnspan=2,
+                                   sticky="ew", ipady=4, pady=1)
+tk.Button(frame_ops, text="Изменить количество", relief="flat",
+          bg="#f0ad4e", fg="white", font=("Arial", 8),
+          command=edit_kol).grid(row=14, column=0, columnspan=2,
+                                 sticky="ew", ipady=4, pady=1)
+tk.Button(frame_ops, text="Изменить магазин", relief="flat",
+          bg="#f0ad4e", fg="white", font=("Arial", 8),
+          command=edit_magazin).grid(row=15, column=0, columnspan=2,
+                                     sticky="ew", ipady=4, pady=1)
+
+tk.Button(bottom, text="Обновить список", font=("Arial", 10, "bold"),
+          bg="#337ab7", fg="white", relief="flat",
+          command=load_data).grid(row=1, column=0, columnspan=2,
+                                  sticky="ew", padx=5, ipady=6)
+
+bottom.columnconfigure(0, weight=1)
+bottom.columnconfigure(1, weight=1)
+
+load_data()
+
+root.mainloop()
