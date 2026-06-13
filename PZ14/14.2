@@ -4,8 +4,6 @@ import tkinter as tk
 from tkinter import messagebox
 
 
-# задача 1 из пз5 вариант 1
-# вычитаем сумму цифр из числа пока не получим 0
 def summa_cifr(n):
     s = 0
     while n > 0:
@@ -15,7 +13,6 @@ def summa_cifr(n):
 
 
 def skolko_shagov(n):
-    # считаем сколько раз надо вычесть сумму цифр чтобы получить 0
     count = 0
     while n != 0:
         n = n - summa_cifr(n)
@@ -23,8 +20,6 @@ def skolko_shagov(n):
     return count
 
 
-# задача 2 из пз5 вариант 1
-# степени числа 2 3 4
 def power_a234(a):
     b = a ** 2
     c = a ** 3
@@ -32,7 +27,6 @@ def power_a234(a):
     return b, c, d
 
 
-# обработка кнопки задача 1
 def run_task1():
     try:
         n = int(entry_t1.get())
@@ -45,7 +39,6 @@ def run_task1():
         messagebox.showerror("Ошибка", "Введите целое число!")
 
 
-# обработка кнопки задача 2
 def run_task2():
     results = ""
     # берем 5 чисел из полей
@@ -64,7 +57,6 @@ def run_task2():
     text_res2.config(state="disabled")
 
 
-# главное окно
 root = tk.Tk()
 root.title("ПЗ №14 — Вариант 1 / ПЗ №5")
 root.geometry("460x580")
@@ -74,7 +66,7 @@ root.configure(bg="#f5f5f5")
 tk.Label(root, text="Задание 2 (ПЗ №5, Вариант 1)",
          font=("Arial", 14, "bold"), bg="#f5f5f5").pack(pady=(15, 5))
 
-# блок задача 1
+
 frame1 = tk.LabelFrame(root, text="Задача 1 — вычитание суммы цифр",
                         font=("Arial", 10, "bold"), bg="#f5f5f5", padx=10, pady=10)
 frame1.pack(padx=20, fill="x", pady=5)
@@ -95,7 +87,6 @@ label_res1 = tk.Label(frame1, text="Количество шагов: —",
                       font=("Arial", 11), bg="#f5f5f5", fg="#333333")
 label_res1.pack(pady=(8, 0))
 
-# блок задача 2
 frame2 = tk.LabelFrame(root, text="Задача 2 — степени 5 чисел (A², A³, A⁴)",
                         font=("Arial", 10, "bold"), bg="#f5f5f5", padx=10, pady=10)
 frame2.pack(padx=20, fill="x", pady=10)
@@ -103,7 +94,6 @@ frame2.pack(padx=20, fill="x", pady=10)
 tk.Label(frame2, text="Введите 5 чисел:", font=("Arial", 10),
          bg="#f5f5f5").pack(anchor="w")
 
-# поля для 5 чисел в одну строку
 nums_frame = tk.Frame(frame2, bg="#f5f5f5")
 nums_frame.pack(fill="x", pady=(4, 8))
 
@@ -131,7 +121,6 @@ tk.Button(frame2, text="Вычислить степени", font=("Arial", 10, "
           activebackground="#357abd", cursor="hand2",
           command=run_task2).pack(fill="x", ipady=7)
 
-# поле вывода результатов задачи 2
 text_res2 = tk.Text(frame2, font=("Arial", 10), height=6,
                     state="disabled", bg="#eeeeee", relief="flat", bd=0)
 text_res2.pack(fill="x", pady=(8, 0))
