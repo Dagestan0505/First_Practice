@@ -7,136 +7,74 @@ import tkinter as tk
 from tkinter import messagebox
 
 
-# задача 1 из пз5 вариант 1
-# вычитаем сумму цифр из числа пока не получим 0
-def summa_cifr(n):
-    s = 0
-    while n > 0:
-        s += n % 10
-        n //= 10
-    return s
+def register():
+    name = entry_name.get()
+    email = entry_email.get()
+    password = entry_pass.get()
+    confirm = entry_confirm.get()
+
+    if name == "" or email == "" or password == "" or confirm == "":
+        messagebox.showwarning("Ошибка", "Заполните все поля!")
+        return
+
+    if password != confirm:
+        messagebox.showwarning("Ошибка", "Пароли не совпадают!")
+        return
+
+    messagebox.showinfo("Успех", "Регистрация прошла успешно!")
 
 
-def skolko_shagov(n):
-    # считаем сколько раз надо вычесть сумму цифр чтобы получить 0
-    count = 0
-    while n != 0:
-        n = n - summa_cifr(n)
-        count += 1
-    return count
-
-
-# задача 2 из пз5 вариант 1
-# степени числа 2 3 4
-def power_a234(a):
-    b = a ** 2
-    c = a ** 3
-    d = a ** 4
-    return b, c, d
-
-
-# обработка кнопки задача 1
-def run_task1():
-    try:
-        n = int(entry_t1.get())
-        if n <= 0:
-            messagebox.showwarning("Ошибка", "Введите положительное целое число!")
-            return
-        result = skolko_shagov(n)
-        label_res1.config(text=f"Количество шагов: {result}")
-    except ValueError:
-        messagebox.showerror("Ошибка", "Введите целое число!")
-
-
-# обработка кнопки задача 2
-def run_task2():
-    results = ""
-    # берем 5 чисел из полей
-    entries = [e2_1, e2_2, e2_3, e2_4, e2_5]
-    for i, e in enumerate(entries):
-        try:
-            a = float(e.get())
-            b, c, d = power_a234(a)
-            results += f"A={a}: A²={b}, A³={c}, A⁴={d}\n"
-        except ValueError:
-            messagebox.showerror("Ошибка", f"Поле {i + 1} заполнено неправильно!")
-            return
-    text_res2.config(state="normal")
-    text_res2.delete(1.0, tk.END)
-    text_res2.insert(tk.END, results)
-    text_res2.config(state="disabled")
-
-
-# главное окно
 root = tk.Tk()
-root.title("ПЗ №14 — Вариант 1 / ПЗ №5")
-root.geometry("460x580")
+root.title("Register")
+root.geometry("400x520")
 root.resizable(False, False)
-root.configure(bg="#f5f5f5")
+root.configure(bg="#f2f2f2")
 
-tk.Label(root, text="Задание 2 (ПЗ №5, Вариант 1)",
-         font=("Arial", 14, "bold"), bg="#f5f5f5").pack(pady=(15, 5))
 
-# блок задача 1
-frame1 = tk.LabelFrame(root, text="Задача 1 — вычитание суммы цифр",
-                        font=("Arial", 10, "bold"), bg="#f5f5f5", padx=10, pady=10)
-frame1.pack(padx=20, fill="x", pady=5)
+title_label = tk.Label(root, text="Create an Account",
+                       font=("Arial", 18, "bold"), bg="#f2f2f2", fg="#333333")
+title_label.pack(pady=(30, 5))
 
-tk.Label(frame1, text="Введите число:", font=("Arial", 10),
-         bg="#f5f5f5").pack(anchor="w")
-entry_t1 = tk.Entry(frame1, font=("Arial", 11), bd=0,
-                    highlightthickness=1, highlightbackground="#cccccc",
-                    highlightcolor="#4a90d9", relief="flat")
-entry_t1.pack(fill="x", ipady=5, pady=(2, 8))
+sub_label = tk.Label(root, text="Fill in the form below to get instant access.",
+                     font=("Arial", 9), bg="#f2f2f2", fg="#888888")
+sub_label.pack(pady=(0, 20))
 
-tk.Button(frame1, text="Вычислить", font=("Arial", 10, "bold"),
-          bg="#4a90d9", fg="white", relief="flat",
-          activebackground="#357abd", cursor="hand2",
-          command=run_task1).pack(fill="x", ipady=7)
+frame = tk.Frame(root, bg="#f2f2f2")
+frame.pack(padx=40, fill="x")
 
-label_res1 = tk.Label(frame1, text="Количество шагов: —",
-                      font=("Arial", 11), bg="#f5f5f5", fg="#333333")
-label_res1.pack(pady=(8, 0))
 
-# блок задача 2
-frame2 = tk.LabelFrame(root, text="Задача 2 — степени 5 чисел (A², A³, A⁴)",
-                        font=("Arial", 10, "bold"), bg="#f5f5f5", padx=10, pady=10)
-frame2.pack(padx=20, fill="x", pady=10)
+def make_field(parent, label_text, show=None):
+    lbl = tk.Label(parent, text=label_text, font=("Arial", 9, "bold"),
+                   bg="#f2f2f2", fg="#555555", anchor="w")
+    lbl.pack(fill="x", pady=(10, 2))
+    entry = tk.Entry(parent, font=("Arial", 11), bd=0,
+                     highlightthickness=1, highlightbackground="#cccccc",
+                     highlightcolor="#4a90d9", relief="flat", show=show)
+    entry.pack(fill="x", ipady=7)
+    return entry
 
-tk.Label(frame2, text="Введите 5 чисел:", font=("Arial", 10),
-         bg="#f5f5f5").pack(anchor="w")
 
-# поля для 5 чисел в одну строку
-nums_frame = tk.Frame(frame2, bg="#f5f5f5")
-nums_frame.pack(fill="x", pady=(4, 8))
+entry_name = make_field(frame, "Full Name")
+entry_email = make_field(frame, "Email Address")
+entry_pass = make_field(frame, "Password", show="*")
+entry_confirm = make_field(frame, "Confirm Password", show="*")
 
-e2_1 = tk.Entry(nums_frame, font=("Arial", 11), width=7, bd=0,
-                highlightthickness=1, highlightbackground="#cccccc",
-                highlightcolor="#4a90d9", relief="flat")
-e2_2 = tk.Entry(nums_frame, font=("Arial", 11), width=7, bd=0,
-                highlightthickness=1, highlightbackground="#cccccc",
-                highlightcolor="#4a90d9", relief="flat")
-e2_3 = tk.Entry(nums_frame, font=("Arial", 11), width=7, bd=0,
-                highlightthickness=1, highlightbackground="#cccccc",
-                highlightcolor="#4a90d9", relief="flat")
-e2_4 = tk.Entry(nums_frame, font=("Arial", 11), width=7, bd=0,
-                highlightthickness=1, highlightbackground="#cccccc",
-                highlightcolor="#4a90d9", relief="flat")
-e2_5 = tk.Entry(nums_frame, font=("Arial", 11), width=7, bd=0,
-                highlightthickness=1, highlightbackground="#cccccc",
-                highlightcolor="#4a90d9", relief="flat")
+agree_var = tk.BooleanVar()
+chk = tk.Checkbutton(frame, text="I agree to the Terms and Conditions",
+                     variable=agree_var, bg="#f2f2f2",
+                     font=("Arial", 9), fg="#555555",
+                     activebackground="#f2f2f2")
+chk.pack(anchor="w", pady=(15, 0))
 
-for e in [e2_1, e2_2, e2_3, e2_4, e2_5]:
-    e.pack(side="left", ipady=5, padx=3)
+btn = tk.Button(root, text="Register Now", font=("Arial", 11, "bold"),
+                bg="#4a90d9", fg="white", relief="flat",
+                activebackground="#357abd", activeforeground="white",
+                cursor="hand2", command=register)
+btn.pack(padx=40, fill="x", pady=(20, 0), ipady=10)
 
-tk.Button(frame2, text="Вычислить степени", font=("Arial", 10, "bold"),
-          bg="#4a90d9", fg="white", relief="flat",
-          activebackground="#357abd", cursor="hand2",
-          command=run_task2).pack(fill="x", ipady=7)
-
-# поле вывода результатов задачи 2
-text_res2 = tk.Text(frame2, font=("Arial", 10), height=6,
-                    state="disabled", bg="#eeeeee", relief="flat", bd=0)
-text_res2.pack(fill="x", pady=(8, 0))
+login_label = tk.Label(root, text="Already have an account? Sign In",
+                       font=("Arial", 9), bg="#f2f2f2", fg="#4a90d9",
+                       cursor="hand2")
+login_label.pack(pady=(12, 0))
 
 root.mainloop()
