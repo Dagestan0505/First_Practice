@@ -1,0 +1,124 @@
+''Создайте класс «Круг», который имеет атрибут радиуса и методы вычисления площади, длины окружности и диаметра.''
+
+
+import math
+
+
+
+class Krug:
+    # класс для работы с кругом
+    def __init__(self, radius):
+        self.radius = radius  # радиус
+
+    def ploshhad(self):
+        # площадь круга = пи * р в квадрате
+        return math.pi * self.radius ** 2
+
+    def dlina_okruzhnosti(self):
+        # длина окружности = 2 * пи * р
+        return 2 * math.pi * self.radius
+
+    def diametr(self):
+        # диаметр это радиус умноженный на 2
+        return self.radius * 2
+
+
+print("=== Класс Круг ===")
+
+k1 = Krug(5)
+print(f"Радиус: {k1.radius}")
+print(f"Площадь: {k1.ploshhad():.2f}")
+print(f"Длина окружности: {k1.dlina_okruzhnosti():.2f}")
+print(f"Диаметр: {k1.diametr()}")
+
+print()
+
+k2 = Krug(10)
+print(f"Радиус: {k2.radius}")
+print(f"Площадь: {k2.ploshhad():.2f}")
+print(f"Длина окружности: {k2.dlina_okruzhnosti():.2f}")
+print(f"Диаметр: {k2.diametr()}")
+
+print()
+
+k3 = Krug(3.5)
+print(f"Радиус: {k3.radius}")
+print(f"Площадь: {k3.ploshhad():.2f}")
+print(f"Длина окружности: {k3.dlina_okruzhnosti():.2f}")
+print(f"Диаметр: {k3.diametr()}")
+
+
+
+
+
+class Figura:
+    # базовый класс фигура
+    def ploshad(self):
+        # этот метод будут переопределять наследники
+        pass
+
+
+class Kvadrat(Figura):
+    # класс квадрат наследуется от фигуры
+    def __init__(self, storona):
+        self.storona = storona  # сторона квадрата
+
+    def ploshad(self):
+        # площадь квадрата сторона в квадрате
+        return self.storona ** 2
+
+    def perimetr(self):
+        return 4 * self.storona
+
+
+class Pryamougolnik(Figura):
+    # класс прямоугольник наследуется от фигуры
+    def __init__(self,ширина, vysota):
+        self.shirina =ширина
+        self.vysota = vysota
+
+    def ploshad(self):
+        # площадь прямоугольника это ширина умножить на высоту
+        return self.shirina * self.vysota
+
+    def perimetr(self):
+        return 2 * (self.shirina + self.vysota)
+
+
+print()
+print("=== Класс Фигура, Квадрат, Прямоугольник ===")
+
+# тест квадрата
+kv1 = Kvadrat(4)
+print(f"Квадрат со стороной {kv1.storona}:")
+print(f"  Площадь: {kv1.ploshad()}")
+print(f"  Периметр: {kv1.perimetr()}")
+
+print()
+
+kv2 = Kvadrat(7)
+print(f"Квадрат со стороной {kv2.storona}:")
+print(f"  Площадь: {kv2.ploshad()}")
+print(f"  Периметр: {kv2.perimetr()}")
+
+print()
+
+# тест прямоугольника
+pr1 = Pryamougolnik(5, 3)
+print(f"Прямоугольник {pr1.shirina}x{pr1.vysota}:")
+print(f"  Площадь: {pr1.ploshad()}")
+print(f"  Периметр: {pr1.perimetr()}")
+
+print()
+
+pr2 = Pryamougolnik(10, 4)
+print(f"Прямоугольник {pr2.shirina}x{pr2.vysota}:")
+print(f"  Площадь: {pr2.ploshad()}")
+print(f"  Периметр: {pr2.perimetr()}")
+
+print()
+
+pr3 = Pryamougolnik(6, 6)
+print(f"Прямоугольник {pr3.shirina}x{pr3.vysota}:")
+print(f"  Площадь: {pr3.ploshad()}")
+print(f"  Периметр: {pr3.perimetr()}")
